@@ -36,7 +36,7 @@ var App = {
   smsVerify: function smsVerify() {
     ClientRequestHelper.smsVerify(this.msisdn.value, this.sessionToken,
       function(result) {
-      console.log('Yay ' + result);
+      console.log('Yay ' + JSON.stringify(result));
     }, function(error) {
       console.error('Error ' + JSON.stringify(error));
     });

@@ -23,12 +23,9 @@
     req.withCredentials = true;
 
     if (options.credentials) {
-      console.log('credentials ' + JSON.stringify(options.credentials));
       var hawkHeader = hawk.client.header(options.url, options.method, {
-        credentials: options.credentials,
-        contentType: 'application/json'
+        credentials: options.credentials
       });
-      console.log('hawk ' + hawkHeader.field);
       req.setRequestHeader('authorization', hawkHeader.field);
     }
     req.onload = function() {
@@ -76,7 +73,7 @@
     },
 
     smsVerify: function smsVerify(msisdn, credentials, onsuccess, onerror) {
-      deriveHawkCredentials(credentials, '', 2 * 32, function(hawkCredentials) {
+      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
           url: SERVER_URL + '/sms/verify',
@@ -89,7 +86,7 @@
     },
 
     smsResendCode: function smsResendCode(msisdn, onsuccess, onerror) {
-      deriveHawkCredentials(credentials, '', 2 * 32, function(hawkCredentials) {
+      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
           url: SERVER_URL + '/sms/resend_code',
@@ -103,7 +100,7 @@
 
     smsVerifyCode: function smsVerifyCode(msisdn, verificationCode, publicKey,
                                           duration, onsuccess, onerror) {
-      deriveHawkCredentials(credentials, '', 2 * 32, function(hawkCredentials) {
+      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
           url: SERVER_URL + '/sms/verify_code',

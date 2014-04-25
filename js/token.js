@@ -70,7 +70,7 @@ function deriveHawkCredentials(tokenHex, context, size, callback) {
     callback({
       algorithm: 'sha256',
       id: sjcl.codec.hex.fromBits(bitSlice(out, 0, 8 * 32)),
-      key: authKey,
+      key: sjcl.codec.hex.fromBits(authKey),
       bundleKey: bundleKey
     });
   });

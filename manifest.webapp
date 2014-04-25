@@ -1,6 +1,6 @@
 {
   "name": "MSISDN verification tester",
-  "description": "Dumb client to test the API exposed by the Mozilla MSISDN verification tester",
+  "description": "Dumb client to test the API exposed by the Mozilla MSISDN verification service",
   "type": "privileged",
   "launch_path": "/index.html",
   "origin": "app://msisdnverifiertest.com"
