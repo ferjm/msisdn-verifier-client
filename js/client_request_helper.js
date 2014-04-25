@@ -5,7 +5,7 @@
 
 (function(exports) {
 
-  var SERVER_URL = 'http://msisdn.dev.mozaws.net';
+  var SERVER_URL = 'http://192.168.0.11:5000';
   var TIMEOUT = 15000;
 
   function callback(cb, args) {

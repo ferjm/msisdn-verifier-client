@@ -50,6 +50,13 @@ var App = {
     ClientRequestHelper.smsVerify(this.msisdn.value, this.sessionToken,
       (function(result) {
       console.log('Yay ' + JSON.stringify(result));
+      require('./lib/jwcrypto').generateKeyPair.generateKeypair({
+          algorithm: 'DS',
+          keysize: 160
+      }, function(err, keypair) {
+          // serialize the public key
+          console.log('keypair ' + keypair.publicKey.serialize());
+      });
       this.showVerificationForm();
     }).bind(this), function(error) {
       console.error('Error ' + JSON.stringify(error));
@@ -59,6 +66,5 @@ var App = {
 
 window.addEventListener('DOMContentLoaded', function onload() {
   window.removeEventListener('DOMContentLoaded', onload);
-
   App.init();
 });
