@@ -5,8 +5,12 @@
 body {
   background: #F7F5F2;
   font-family: Arial;
-  font-size: 12px;
+  font-size: 20px;
   color: #C4BCB0;
+}
+
+h1 {
+  text-align: center;
 }
 
 input[type="text"] {
@@ -29,14 +33,16 @@ button {
   border-radius: 3px;
   font-weight: bold;
   width: 100%;
-  color: #fff;  
+  color: #fff;
   margin-top: 10px;
+  font-size: 20px;
 }
 
 .main-form {
   width: auto;
   margin: 0 auto;
-  padding: 50px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 
 .main-form > label {
@@ -51,4 +57,10 @@ button {
 
 .hidden {
   display: none;
+}
+
+img.displayed {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

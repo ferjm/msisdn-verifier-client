@@ -5,7 +5,7 @@
 
 (function(exports) {
 
-  var SERVER_URL = 'http://msisdn.dev.mozaws.net/';
+  var SERVER_URL = 'http://192.168.0.11:5000';
   var TIMEOUT = 15000;
 
   function callback(cb, args) {
@@ -62,14 +62,17 @@
       }, onsuccess, onerror);
     },
 
-    unregister: function unregister(msisdn, onsuccess, onerror) {
-      request({
-        method: 'POST',
-        url: SERVER_URL + '/unregister',
-        body: {
-          msisdn: msisdn
-        }
-      }, onsuccess, onerror);
+    unregister: function unregister(msisdn, credentials, onsuccess, onerror) {
+      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
+        request({
+          method: 'POST',
+          url: SERVER_URL + '/unregister',
+          body: {
+            msisdn: msisdn
+          },
+          credentials: hawkCredentials
+        }, onsuccess, onerror);
+      });
     },
 
     smsVerify: function smsVerify(msisdn, credentials, onsuccess, onerror) {
@@ -85,7 +88,7 @@
       });
     },
 
-    smsResendCode: function smsResendCode(msisdn, onsuccess, onerror) {
+    smsResendCode: function smsResendCode(msisdn, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
@@ -99,7 +102,7 @@
     },
 
     smsVerifyCode: function smsVerifyCode(msisdn, verificationCode, publicKey,
-                                          duration, onsuccess, onerror) {
+                                          duration, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',

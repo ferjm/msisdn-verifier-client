@@ -4,15 +4,16 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="css/style.css"/>
-  <script defer src="js/ext/sjcl.js"></script> 
-  <script defer src="js/ext/hawk.js"></script>
-  <script defer src="js/ext/bidbundle.js"></script>
-  <script defer src="js/token.js"></script>
-  <script defer src="js/client_request_helper.js"></script>
-  <script defer src="js/app.js"></script>
+  <script src="js/ext/sjcl.js"></script>
+  <script src="js/ext/hawk.js"></script>
+  <script src="js/ext/bidbundle.js"></script>
+  <script src="js/token.js"></script>
+  <script src="js/client_request_helper.js"></script>
+  <script src="js/app.js"></script>
   <title>MSISDN verificator tester</title>
 </head>
 <body role="application">
+  <h1>MSISDN verifier tester</h1>
   <div class="main-form">
     <section id="register-form">
       <label>MSISDN</label>
@@ -22,17 +23,21 @@
       <label>MNC</label>
       <input type="text" id="mnc" placeholder="mnc">
       <div>
-        <button id="btRegister">Register MSISDN</button>
+        <button id="register-button">Register MSISDN</button>
       </div>
     </section>
     <section id="verify-form" class="hidden">
       <label>Verification code</label>
-      <input type="text" id="verificationCode" placeholder="Enter verification code">
+      <input type="text" id="verification-code" placeholder="Enter verification code">
       <div>
-        <button id="btVerify">Verify</button>
+        <button id="verify-button">Verify</button>
+        <button id="resend-button">Resend code</button>
       </div>
     </section>
-    <button id="btReset">Reset</button>
+    <section>
+      <img id="verified" class="hidden" src="css/images/verified.png" alt="verified"></img>
+    </section>
+    <button id="reset-button">Reset</button>
   </div>
 
 </body>
