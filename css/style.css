@@ -48,3 +48,7 @@ button {
 .main-form > div{
   margin-top: 20px;
 }
+
+.hidden {
+  display: none;
+}

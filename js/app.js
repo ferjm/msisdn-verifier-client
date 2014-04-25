@@ -8,10 +8,22 @@ var App = {
     this.msisdn = document.getElementById('msisdn');
     this.mcc = document.getElementById('mcc');
     this.mnc = document.getElementById('mnc');
-    document.getElementById('btVerify').addEventListener('click',
-                                                         this.register.bind(this));
+    this.registerForm = document.getElementById('register-form');
+    this.verifyForm = document.getElementById('verify-form');
+    document.getElementById('btRegister').addEventListener('click',
+                                                           this.register.bind(this));
     document.getElementById('btReset').addEventListener('click',
                                                         this.reset.bind(this));
+  },
+
+  showVerificationForm: function showVerificationForm() {
+    this.registerForm.classList.add('hidden');
+    this.verifyForm.classList.remove('hidden');
+  },
+
+  showRegistrationForm: function showRegistrationForm() {
+    this.registerForm.classList.remove('hidden');
+    this.verifyForm.classList.add('hidden');
   },
 
   register: function register() {
@@ -31,13 +43,15 @@ var App = {
 
   reset: function reset() {
     this.sessionToken = null;
+    this.showRegistrationForm();
   },
 
   smsVerify: function smsVerify() {
     ClientRequestHelper.smsVerify(this.msisdn.value, this.sessionToken,
-      function(result) {
+      (function(result) {
       console.log('Yay ' + JSON.stringify(result));
-    }, function(error) {
+      this.showVerificationForm();
+    }).bind(this), function(error) {
       console.error('Error ' + JSON.stringify(error));
     });
   }

@@ -13,16 +13,26 @@
 </head>
 <body role="application">
   <div class="main-form">
-    <label>MSISDN</label>
-    <input type="text" id="msisdn" placeholder="MSISDN" value="123456789">
-    <label>MCC</label>
-    <input type="text" id="mcc" placeholder="MCC" value="214">
-    <label>MNC</label>
-    <input type="text" id="mnc" placeholder="MNC" value="07">
-    <div>
-      <button id="btVerify">Verify</button>
-      <button id="btReset">Reset</button>
-    </div>
+    <section id="register-form">
+      <label>MSISDN</label>
+      <input type="text" id="msisdn" placeholder="msisdn">
+      <label>MCC</label>
+      <input type="text" id="mcc" placeholder="mcc">
+      <label>MNC</label>
+      <input type="text" id="mnc" placeholder="mnc">
+      <div>
+        <button id="btRegister">Register MSISDN</button>
+      </div>
+    </section>
+    <section id="verify-form" class="hidden">
+      <label>Verification code</label>
+      <input type="text" id="verificationCode" placeholder="Enter verification code">
+      <div>
+        <button id="btVerify">Verify</button>
+      </div>
+    </section>
+    <button id="btReset">Reset</button>
   </div>
+
 </body>
 </html>
