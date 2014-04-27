@@ -20,25 +20,43 @@ var App = {
                                                               this.smsVerifyCode.bind(this));
     document.getElementById('resend-button').addEventListener('click',
                                                               this.smsResendCode.bind(this));
-  },
-
-  showVerificationForm: function showVerificationForm() {
-    this.registerForm.classList.add('hidden');
-    this.verifyForm.classList.remove('hidden');
-    this.verified.classList.add('hidden');
+    toastr.options = {
+      "closeButton": false,
+      "debug": false,
+      "positionClass": "toast-bottom-full-width",
+      "onclick": null,
+      "showDuration": "300",
+      "hideDuration": "1000",
+      "timeOut": "5000",
+      "extendedTimeOut": "1000",
+      "showEasing": "swing",
+      "hideEasing": "linear",
+      "showMethod": "fadeIn",
+      "hideMethod": "fadeOut"
+    }
   },
 
   showRegistrationForm: function showRegistrationForm() {
     this.registerForm.classList.remove('hidden');
     this.verifyForm.classList.add('hidden');
-    this.verified.classList.add('hidden');
+    this.verified.classList.add('hidden'); 
+    this.verified.classList.remove('center');
     this.resetButton.textContent = 'Reset';
+  },
+
+  showVerificationForm: function showVerificationForm(flow) {
+    this.registerForm.classList.add('hidden');
+    this.verifyForm.classList.remove('hidden');
+    this.verified.classList.add('hidden');
+    this.verified.classList.remove('center');
+    toastr.info(flow);
   },
 
   showVerified: function showVerified() {
     this.registerForm.classList.add('hidden');
     this.verifyForm.classList.add('hidden');
     this.verified.classList.remove('hidden');
+    this.verified.classList.add('center');
     this.resetButton.textContent = 'Restart';
   },
 
@@ -47,13 +65,14 @@ var App = {
                                  this.mnc.value, false, (function(result) {
       console.log('Yay ' + JSON.stringify(result));
       if (!result.msisdnSessionToken) {
-        console.error('No session token');
+        toastr.error('No session token');
         return;
       }
       this.sessionToken = result.msisdnSessionToken;
       this.smsVerify();
     }).bind(this), (function(error) {
       console.error('Error ' + JSON.stringify(error));
+      toastr.error(JSON.stringify(error));
     }).bind(this));
   },
 
@@ -66,9 +85,10 @@ var App = {
     ClientRequestHelper.smsVerify(this.msisdn.value, this.sessionToken,
       (function(result) {
       console.log('Yay ' + JSON.stringify(result));
-      this.showVerificationForm();
+      this.showVerificationForm('SMS MT flow');
     }).bind(this), function(error) {
       console.error('Error ' + JSON.stringify(error));
+      toastr.error(JSON.stringify(error));
     });
   },
 
@@ -93,6 +113,7 @@ var App = {
         }).bind(this),
         function(error) {
           console.log('Error: ' + JSON.stringify(error));
+          toastr.error(JSON.stringify(error));
         });
     }).bind(this));
   },
@@ -100,9 +121,10 @@ var App = {
   smsResendCode: function smsResendCode() {
     ClientRequestHelper.smsResendCode(this.msisdn.value,
                                       this.sessionToken,
-                                      function(result) {
+                                      (function(result) {
       console.log('Yay ' + JSON.stringify(result));
-    }, function(error) {
+      toastr.info('Code resent to ' + this.msisdn.value);
+    }).bind(this), function(error) {
       console.log('Error: ' + JSON.stringify(error));
     });
   }

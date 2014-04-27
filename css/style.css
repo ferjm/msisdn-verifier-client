@@ -59,8 +59,8 @@ button {
   display: none;
 }
 
-img.displayed {
-  display: block;
+img.center {
   margin-left: auto;
   margin-right: auto;
+  display: block;
 }
