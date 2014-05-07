@@ -79,7 +79,7 @@
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/sms/verify',
+          url: SERVER_URL + '/sms/mt/verify',
           body: {
             msisdn: msisdn
           },
@@ -92,7 +92,7 @@
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/sms/resend_code',
+          url: SERVER_URL + '/sms/mt/resend_code',
           body: {
             msisdn: msisdn
           },
