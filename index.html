@@ -17,8 +17,11 @@
 </head>
 <body role="application">
   <h1>MSISDN verifier tester</h1>
+
   <div class="main-form">
-    <section id="register-form">
+
+    <section id="discover-form">
+      <h3>Discover</h3>
       <label>MSISDN</label>
       <input type="text" id="msisdn" placeholder="msisdn">
       <label>MCC</label>
@@ -26,20 +29,46 @@
       <label>MNC</label>
       <input type="text" id="mnc" placeholder="mnc">
       <div>
-        <button id="register-button">Register MSISDN</button>
+        <button id="discover-button">Discover validation methods</button>
       </div>
     </section>
+
+    <section id="momt-info" class="hidden">
+      <h3>MOMT Flow</h3>
+      <label>Please send this code:</label>
+      <input type="text" id="momt-code" value="code" disabled>
+      <label>To this number:</label>
+      <input type="text" id="momt-number" value="number" disabled>
+
+      <h3>MT Flow</h3>
+      <label>You should receive a SMS from:</label>
+      <input type="text" id="mt-number" value="number" disabled>
+    </section>
+
+    <section id="mt-info" class="hidden">
+      <h3>MT Flow</h3>
+      <label>You should receive a SMS from:</label>
+      <input type="text" id="mtinfo-number" value="number" disabled>
+      <label>MSISDN</label>
+      <input type="text" id="register-msisdn" placeholder="msisdn">
+
+      <div>
+        <button id="register-button">Register</button>
+      </div>
+    </section>
+
     <section id="verify-form" class="hidden">
       <label>Verification code</label>
       <input type="text" id="verification-code" placeholder="Enter verification code">
       <div>
         <button id="verify-button">Verify</button>
-        <button id="resend-button">Resend code</button>
       </div>
     </section>
-    <section>
-      <img id="verified" class="hidden" src="css/images/verified.png" alt="verified"></img>
+
+    <section id="verified" class="hidden">
+      <img src="css/images/verified.png" alt="verified">
     </section>
+
     <button id="reset-button">Reset</button>
   </div>
 
