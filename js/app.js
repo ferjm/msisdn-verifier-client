@@ -96,9 +96,10 @@ var App = {
   },
 
   discover: function discover() {
+    var self = this;
     ClientRequestHelper.discover(
-      this.msisdn.value, this.mcc.value, this.mnc.value, false,
-      (function(result) {                   
+      self.msisdn.value, self.mcc.value, self.mnc.value, false,
+      function(result) {
         console.log('Discover: ' + JSON.stringify(result));
         if (!result.verificationMethods ||
             result.verificationMethods.length === 0) {
@@ -108,17 +109,17 @@ var App = {
 
         // Start the MT Flow
         if (result.verificationMethods[0] === "sms/mt") {
-          this.registerMsisdn.value = this.msisdn.value;
-          this.mtInfoNumber.value = result.verificationDetails["sms/mt"].mtSender;
-          this.flow = "SMS MT flow";
-          this.showMtInfo();
+          self.registerMsisdn.value = self.msisdn.value;
+          self.mtInfoNumber.value = result.verificationDetails["sms/mt"].mtSender;
+          self.flow = "SMS MT flow";
+          self.showMtInfo();
           return;
         }
 
         // Start the MOMT Flow
         if (result.verificationMethods[0] === "sms/momt") {
           var details = result.verificationDetails["sms/momt"];
-          this.register((function (err, msisdnSessionToken) {
+          self.register(function (err, msisdnSessionToken) {
             if (err) {
               toastr.error(err);
               return;
@@ -126,25 +127,25 @@ var App = {
             deriveHawkCredentials(
               msisdnSessionToken, 'sessionToken', 2 * 32,
               function(hawkCredentials) {
-                this.momtCode.value = hawkCredentials.id;
-                this.momtNumber.value = details.moVerifier;
-                this.mtNumber.value = details.mtSender;
-                this.flow = "SMS MOMT flow";
-                this.showMoMtInfo();
+                self.momtCode.value = hawkCredentials.id;
+                self.momtNumber.value = details.moVerifier;
+                self.mtNumber.value = details.mtSender;
+                self.flow = "SMS MOMT flow";
+                self.showMoMtInfo();
               });
-          }).bind(this));
+          });
           return;
         }
 
         // Error if verification methods not known
         toastr.error(
-          result.verificationMethods[0] + " not handled by this tool."
+          result.verificationMethods[0] + " not handled by self tool."
         );
-        this.reset();
-    }).bind(this), (function(error) {
+        self.reset();
+    }, function(error) {
       console.error('Discover Error ' + JSON.stringify(error));
       toastr.error(JSON.stringify(error));
-    }).bind(this));
+    });
   },
 
   register: function register(callback) {
@@ -165,6 +166,15 @@ var App = {
 
   reset: function reset() {
     this.sessionToken = null;
+    this.msisdn.value = "";
+    this.mcc.value = "";
+    this.mnc.value = "";
+    this.momtCode.value = "";
+    this.momtNumber.value = "";
+    this.mtNumber.value = "";
+    this.mtInfoNumber.value = "";
+    this.registerMsisdn.value = "";
+    this.verificationCode.value = "";
     this.flow = null;
     this.showDiscoverForm();
   },

@@ -50,15 +50,18 @@
 
   var ClientRequestHelper = {
     discover: function discover(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
-      request({
-        method: 'POST',
-        url: SERVER_URL + '/discover',
-        body: {
-          msisdn: msisdn,
+      var params = {
           mcc: mcc,
           mnc: mnc,
           roaming: roaming
-        }
+      };
+      if (msisdn) {
+        params.msisdn = msisdn;
+      }
+      request({
+        method: 'POST',
+        url: SERVER_URL + '/discover',
+        body: params
       }, onsuccess, onerror);
     },
 
