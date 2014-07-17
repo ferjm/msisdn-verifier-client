@@ -118,7 +118,7 @@ var App = {
         // Start the MOMT Flow
         if (result.verificationMethods[0] === "sms/momt") {
           var details = result.verificationDetails["sms/momt"];
-          this.register(function (err, msisdnSessionToken) {
+          this.register((function (err, msisdnSessionToken) {
             if (err) {
               toastr.error(err);
               return;
@@ -132,7 +132,7 @@ var App = {
                 this.flow = "SMS MOMT flow";
                 this.showMoMtInfo();
               });
-          });
+          }).bind(this));
           return;
         }
 
@@ -148,18 +148,19 @@ var App = {
   },
 
   register: function register(callback) {
-    ClientRequestHelper.register((function(result) {
+    var self = this;
+    ClientRequestHelper.register(function(result) {
       console.log('Register ' + JSON.stringify(result));
       if (!result.msisdnSessionToken) {
         callback(new Error("No session token"));
         return;
       }
-      this.sessionToken = result.msisdnSessionToken;
-      callback(null, this.sessionToken);
-    }).bind(this), (function(error) {
+      self.sessionToken = result.msisdnSessionToken;
+      callback(null, self.sessionToken);
+    }, function(error) {
       console.error('Register Error ' + JSON.stringify(error));
       callback(new Error(JSON.stringify(error)));
-    }).bind(this));
+    });
   },
 
   reset: function reset() {
