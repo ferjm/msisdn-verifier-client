@@ -115,7 +115,7 @@
           method: 'POST',
           url: SERVER_URL + '/certificate/sign',
           body: {
-            publicKey: publicKey,
+            publicKey: JSON.stringify(publicKey),
             duration: duration
           },
           credentials: hawkCredentials

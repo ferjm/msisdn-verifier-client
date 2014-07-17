@@ -24,7 +24,7 @@ var App = {
     this.mtInfoNumber = document.getElementById('mtinfo-number');
     this.registerMsisdn = document.getElementById('register-msisdn');
     this.registerButton = document.getElementById('register-button');
-    this.registerButton.addEventListener('click', this.register.bind(this));
+    this.registerButton.addEventListener('click', this.smsVerify.bind(this));
 
     // Verify form
     this.verifyForm = document.getElementById('verify-form');
