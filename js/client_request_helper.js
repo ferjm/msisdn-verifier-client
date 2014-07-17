@@ -49,7 +49,7 @@
   }
 
   var ClientRequestHelper = {
-    discover: function register(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
+    discover: function discover(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
       request({
         method: 'POST',
         url: SERVER_URL + '/discover',
@@ -62,16 +62,10 @@
       }, onsuccess, onerror);
     },
 
-    register: function register(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
+    register: function register(onsuccess, onerror) {
       request({
         method: 'POST',
-        url: SERVER_URL + '/register',
-        body: {
-          msisdn: msisdn,
-          mcc: mcc,
-          mnc: mnc,
-          roaming: roaming
-        }
+        url: SERVER_URL + '/register'
       }, onsuccess, onerror);
     },
 
