@@ -13,6 +13,10 @@ h1 {
   text-align: center;
 }
 
+span {
+  font-weight: bold;
+}
+
 input[type="text"] {
   background: #EAE6E1;
   border: 0;
@@ -59,7 +63,7 @@ button {
   display: none;
 }
 
-img.center {
+#verified img {
   margin-left: auto;
   margin-right: auto;
   display: block;

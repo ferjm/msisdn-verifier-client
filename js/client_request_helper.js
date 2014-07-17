@@ -5,7 +5,7 @@
 
 (function(exports) {
 
-  var SERVER_URL = 'http://msisdn.dev.mozaws.net';
+  var SERVER_URL = 'https://msisdn-dev.stage.mozaws.net';
   var TIMEOUT = 15000;
 
   function callback(cb, args) {
@@ -49,6 +49,19 @@
   }
 
   var ClientRequestHelper = {
+    discover: function register(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
+      request({
+        method: 'POST',
+        url: SERVER_URL + '/discover',
+        body: {
+          msisdn: msisdn,
+          mcc: mcc,
+          mnc: mnc,
+          roaming: roaming
+        }
+      }, onsuccess, onerror);
+    },
+
     register: function register(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
       request({
         method: 'POST',
@@ -81,35 +94,33 @@
           method: 'POST',
           url: SERVER_URL + '/sms/mt/verify',
           body: {
-            msisdn: msisdn
+            msisdn: msisdn,
+            shortVerificationCode: true
           },
           credentials: hawkCredentials
         }, onsuccess, onerror);
       });
     },
 
-    smsResendCode: function smsResendCode(msisdn, credentials, onsuccess, onerror) {
-      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
-        request({
-          method: 'POST',
-          url: SERVER_URL + '/sms/mt/resend_code',
-          body: {
-            msisdn: msisdn
-          },
-          credentials: hawkCredentials
-        }, onsuccess, onerror);
-      });
-    },
-
-    smsVerifyCode: function smsVerifyCode(msisdn, verificationCode, publicKey,
-                                          duration, credentials, onsuccess, onerror) {
+    smsVerifyCode: function smsVerifyCode(verificationCode, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
           url: SERVER_URL + '/sms/verify_code',
           body: {
-            msisdn: msisdn,
-            code: verificationCode,
+            code: verificationCode
+          },
+          credentials: hawkCredentials
+        }, onsuccess, onerror);
+      });
+    },
+
+    certificateSign: function certificateSign(publicKey, duration, credentials, onsuccess, onerror) {
+      deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
+        request({
+          method: 'POST',
+          url: SERVER_URL + '/certificate/sign',
+          body: {
             publicKey: publicKey,
             duration: duration
           },

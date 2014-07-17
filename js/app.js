@@ -5,21 +5,40 @@
 
 var App = {
   init: function init() {
+    // Discover form
+    this.discoverForm = document.getElementById('discover-form');
     this.msisdn = document.getElementById('msisdn');
     this.mcc = document.getElementById('mcc');
     this.mnc = document.getElementById('mnc');
-    this.verificationCode = document.getElementById('verification-code');
-    this.registerForm = document.getElementById('register-form');
+    this.discoverButton = document.getElementById('discover-button');
+    this.discoverButton.addEventListener('click', this.discover.bind(this));
+
+    // MOMT Info
+    this.momtInfo = document.getElementById('momt-info');
+    this.momtCode = document.getElementById('momt-code');
+    this.momtNumber = document.getElementById('momt-number');
+    this.mtNumber = document.getElementById('mt-number');
+
+    // MT Info
+    this.mtInfo = document.getElementById('mt-info');
+    this.mtInfoNumber = document.getElementById('mtinfo-number');
+    this.registerMsisdn = document.getElementById('register-msisdn');
+    this.registerButton = document.getElementById('register-button');
+    this.registerButton.addEventListener('click', this.register.bind(this));
+
+    // Verify form
     this.verifyForm = document.getElementById('verify-form');
+    this.verificationCode = document.getElementById('verification-code');
+    this.verifyButton = document.getElementById('verify-button');
+    this.verifyButton.addEventListener('click', this.smsVerifyCode.bind(this));
+
+    // Verified
     this.verified = document.getElementById('verified');
+
+    // Reset
     this.resetButton = document.getElementById('reset-button');
     this.resetButton.addEventListener('click', this.reset.bind(this));
-    document.getElementById('register-button').addEventListener('click',
-                                                                this.register.bind(this));
-    document.getElementById('verify-button').addEventListener('click',
-                                                              this.smsVerifyCode.bind(this));
-    document.getElementById('resend-button').addEventListener('click',
-                                                              this.smsResendCode.bind(this));
+
     toastr.options = {
       "closeButton": false,
       "debug": false,
@@ -33,63 +52,133 @@ var App = {
       "hideEasing": "linear",
       "showMethod": "fadeIn",
       "hideMethod": "fadeOut"
-    }
+    };
   },
 
-  showRegistrationForm: function showRegistrationForm() {
-    this.registerForm.classList.remove('hidden');
+  hideAllForms: function hideAllForm() {
+    this.discoverForm.classList.add('hidden');
+    this.momtInfo.classList.add('hidden');
+    this.mtInfo.classList.add('hidden');
     this.verifyForm.classList.add('hidden');
     this.verified.classList.add('hidden'); 
-    this.verified.classList.remove('center');
     this.resetButton.textContent = 'Reset';
   },
 
-  showVerificationForm: function showVerificationForm(flow) {
-    this.registerForm.classList.add('hidden');
+  showDiscoverForm: function showRegistrationForm() {
+    this.hideAllForms();
+    this.discoverForm.classList.remove('hidden');
+  },
+
+  showMoMtInfo: function showMoMtInfo() {
+    this.hideAllForms();
+    this.momtInfo.classList.remove('hidden');
     this.verifyForm.classList.remove('hidden');
-    this.verified.classList.add('hidden');
-    this.verified.classList.remove('center');
-    toastr.info(flow);
+    toastr.info(this.flow);
+  },
+
+  showMtInfo: function showMtInfo() {
+    this.hideAllForms();
+    this.mtInfo.classList.remove('hidden');
+    toastr.info(this.flow);
+  },
+
+  showVerificationForm: function showVerificationForm() {
+    this.hideAllForms();
+    this.verifyForm.classList.remove('hidden');
+    toastr.info(this.flow);
   },
 
   showVerified: function showVerified() {
-    this.registerForm.classList.add('hidden');
-    this.verifyForm.classList.add('hidden');
+    this.hideAllForms();
     this.verified.classList.remove('hidden');
-    this.verified.classList.add('center');
     this.resetButton.textContent = 'Restart';
+    toastr.info(this.flow);
   },
 
-  register: function register() {
-    ClientRequestHelper.register(this.msisdn.value, this.mcc.value,
-                                 this.mnc.value, false, (function(result) {
-      console.log('Yay ' + JSON.stringify(result));
+  discover: function discover() {
+    ClientRequestHelper.discover(
+      this.msisdn.value, this.mcc.value, this.mnc.value, false,
+      (function(result) {                   
+        console.log('Discover: ' + JSON.stringify(result));
+        if (!result.verificationMethods ||
+            result.verificationMethods.length === 0) {
+          toastr.error('No verification methods available.');
+          return;
+        }
+
+        // Start the MT Flow
+        if (result.verificationMethods[0] === "sms/mt") {
+          this.registerMsisdn.value = this.msisdn.value;
+          this.mtInfoNumber.value = result.verificationDetails["sms/mt"].mtSender;
+          this.flow = "SMS MT flow";
+          this.showMtInfo();
+          return;
+        }
+
+        // Start the MOMT Flow
+        if (result.verificationMethods[0] === "sms/momt") {
+          var details = result.verificationDetails["sms/momt"];
+          this.register(function (err, msisdnSessionToken) {
+            if (err) {
+              toastr.error(err);
+              return;
+            }
+            deriveHawkCredentials(
+              msisdnSessionToken, 'sessionToken', 2 * 32,
+              function(hawkCredentials) {
+                this.momtCode.value = hawkCredentials.id;
+                this.momtNumber.value = details.moVerifier;
+                this.mtNumber.value = details.mtSender;
+                this.flow = "SMS MOMT flow";
+                this.showMoMtInfo();
+              });
+          });
+          return;
+        }
+
+        // Error if verification methods not known
+        toastr.error(
+          result.verificationMethods[0] + " not handled by this tool."
+        );
+        this.reset();
+    }).bind(this), (function(error) {
+      console.error('Discover Error ' + JSON.stringify(error));
+      toastr.error(JSON.stringify(error));
+    }).bind(this));
+  },
+
+  register: function register(callback) {
+    ClientRequestHelper.register((function(result) {
+      console.log('Register ' + JSON.stringify(result));
       if (!result.msisdnSessionToken) {
-        toastr.error('No session token');
+        callback(new Error("No session token"));
         return;
       }
       this.sessionToken = result.msisdnSessionToken;
-      this.smsVerify();
+      callback(null, this.sessionToken);
     }).bind(this), (function(error) {
-      console.error('Error ' + JSON.stringify(error));
-      toastr.error(JSON.stringify(error));
+      console.error('Register Error ' + JSON.stringify(error));
+      callback(new Error(JSON.stringify(error)));
     }).bind(this));
   },
 
   reset: function reset() {
     this.sessionToken = null;
-    this.showRegistrationForm();
+    this.flow = null;
+    this.showDiscoverForm();
   },
 
   smsVerify: function smsVerify() {
-    ClientRequestHelper.smsVerify(this.msisdn.value, this.sessionToken,
-      (function(result) {
-      console.log('Yay ' + JSON.stringify(result));
-      this.showVerificationForm('SMS MT flow');
-    }).bind(this), function(error) {
-      console.error('Error ' + JSON.stringify(error));
-      toastr.error(JSON.stringify(error));
-    });
+    this.register((function(err, msisdnSessionToken) {
+      ClientRequestHelper.smsVerify(
+        this.registerMsisdn.value, this.sessionToken, (function(result) {
+          console.log('Verify ' + JSON.stringify(result));
+          this.showVerificationForm();
+        }).bind(this), function(error) {
+          console.error('Verify Error ' + JSON.stringify(error));
+          toastr.error(JSON.stringify(error));
+        });
+    }).bind(this));
   },
 
   smsVerifyCode: function smsVerifyCode() {
@@ -102,31 +191,25 @@ var App = {
       console.log('keypair ' + keypair.publicKey.serialize());
       var publicKey = keypair.publicKey;
       ClientRequestHelper.smsVerifyCode(
-        this.msisdn.value,
         this.verificationCode.value,
-        publicKey,
-        86400000,
         this.sessionToken,
         (function(result) {
-          console.log('Yay ' + JSON.stringify(result));
-          this.showVerified();
-        }).bind(this),
-        function(error) {
-          console.log('Error: ' + JSON.stringify(error));
+          console.log('verify_code ' + JSON.stringify(result));
+          ClientRequestHelper.certificateSign(publicKey, 86400000,
+            this.sessionToken, (function(result) {
+              console.log('certificateSign ' + JSON.stringify(result));
+              this.showVerified();
+            }).bind(this), function(error) {
+              console.log('certificateSign Error: ' + JSON.stringify(error));
+              toastr.error(JSON.stringify(error));
+            }
+          );
+        }).bind(this), function(error) {
+          console.log('verify_code Error: ' + JSON.stringify(error));
           toastr.error(JSON.stringify(error));
-        });
+        }
+      );
     }).bind(this));
-  },
-
-  smsResendCode: function smsResendCode() {
-    ClientRequestHelper.smsResendCode(this.msisdn.value,
-                                      this.sessionToken,
-                                      (function(result) {
-      console.log('Yay ' + JSON.stringify(result));
-      toastr.info('Code resent to ' + this.msisdn.value);
-    }).bind(this), function(error) {
-      console.log('Error: ' + JSON.stringify(error));
-    });
   }
 };
 
