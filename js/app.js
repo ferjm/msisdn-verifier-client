@@ -6,6 +6,7 @@
 var App = {
   init: function init() {
     // Discover form
+    this.serverUrl = document.getElementById('server-url');
     this.discoverForm = document.getElementById('discover-form');
     this.msisdn = document.getElementById('msisdn');
     this.mcc = document.getElementById('mcc');
@@ -98,7 +99,7 @@ var App = {
   discover: function discover() {
     var self = this;
     ClientRequestHelper.discover(
-      self.msisdn.value, self.mcc.value, self.mnc.value, false,
+      self.serverUrl.value, self.msisdn.value, self.mcc.value, self.mnc.value, false,
       function(result) {
         console.log('Discover: ' + JSON.stringify(result));
         if (!result.verificationMethods ||
@@ -150,7 +151,7 @@ var App = {
 
   register: function register(callback) {
     var self = this;
-    ClientRequestHelper.register(function(result) {
+    ClientRequestHelper.register(self.serverUrl.value, function(result) {
       console.log('Register ' + JSON.stringify(result));
       if (!result.msisdnSessionToken) {
         callback(new Error("No session token"));
@@ -166,6 +167,7 @@ var App = {
 
   reset: function reset() {
     this.sessionToken = null;
+    this.server = "";
     this.msisdn.value = "";
     this.mcc.value = "";
     this.mnc.value = "";
@@ -182,7 +184,7 @@ var App = {
   smsVerify: function smsVerify() {
     this.register((function(err, msisdnSessionToken) {
       ClientRequestHelper.smsVerify(
-        this.registerMsisdn.value, this.sessionToken, (function(result) {
+        this.serverUrl.value, this.registerMsisdn.value, this.sessionToken, (function(result) {
           console.log('Verify ' + JSON.stringify(result));
           this.showVerificationForm();
         }).bind(this), function(error) {
@@ -201,12 +203,14 @@ var App = {
     }, (function(err, keypair) {
       console.log('keypair ' + keypair.publicKey.serialize());
       var publicKey = keypair.publicKey;
+      var self = this;
       ClientRequestHelper.smsVerifyCode(
+        this.serverUrl.value,
         this.verificationCode.value,
         this.sessionToken,
         (function(result) {
           console.log('verify_code ' + JSON.stringify(result));
-          ClientRequestHelper.certificateSign(publicKey, 86400000,
+          ClientRequestHelper.certificateSign(self.serverUrl.value, publicKey, 86400000,
             this.sessionToken, (function(result) {
               console.log('certificateSign ' + JSON.stringify(result));
               this.showVerified();
