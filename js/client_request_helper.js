@@ -29,7 +29,7 @@
       req.setRequestHeader('authorization', hawkHeader.field);
     }
     req.onload = function() {
-      if (req.status !== 200 && req.status !== 302) {
+      if (req.status !== 200 && req.status !== 204 && req.status !== 302) {
         callback(onerror, [req.response]);
         return;
       }
@@ -85,13 +85,14 @@
       });
     },
 
-    smsVerify: function smsVerify(msisdn, credentials, onsuccess, onerror) {
+    smsVerify: function smsVerify(msisdn, mcc, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
           url: SERVER_URL + '/sms/mt/verify',
           body: {
             msisdn: msisdn,
+            mcc: mcc,
             shortVerificationCode: true
           },
           credentials: hawkCredentials

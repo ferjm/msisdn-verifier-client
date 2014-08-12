@@ -182,7 +182,8 @@ var App = {
   smsVerify: function smsVerify() {
     this.register((function(err, msisdnSessionToken) {
       ClientRequestHelper.smsVerify(
-        this.registerMsisdn.value, this.sessionToken, (function(result) {
+        this.registerMsisdn.value, this.mcc.value,
+        this.sessionToken, (function(result) {
           console.log('Verify ' + JSON.stringify(result));
           this.showVerificationForm();
         }).bind(this), function(error) {
