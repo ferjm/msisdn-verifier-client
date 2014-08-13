@@ -5,7 +5,7 @@
 
 (function(exports) {
 
-  var SERVER_URL = 'https://msisdn-dev.stage.mozaws.net';
+  // var server = 'https://msisdn-dev.stage.mozaws.net';
   var TIMEOUT = 15000;
 
   function callback(cb, args) {
@@ -49,7 +49,7 @@
   }
 
   var ClientRequestHelper = {
-    discover: function discover(msisdn, mcc, mnc, roaming, onsuccess, onerror) {
+    discover: function discover(server, msisdn, mcc, mnc, roaming, onsuccess, onerror) {
       var params = {
           mcc: mcc,
           mnc: mnc,
@@ -60,23 +60,23 @@
       }
       request({
         method: 'POST',
-        url: SERVER_URL + '/discover',
+        url: server + '/discover',
         body: params
       }, onsuccess, onerror);
     },
 
-    register: function register(onsuccess, onerror) {
+    register: function register(server, onsuccess, onerror) {
       request({
         method: 'POST',
-        url: SERVER_URL + '/register'
+        url: server + '/register'
       }, onsuccess, onerror);
     },
 
-    unregister: function unregister(msisdn, credentials, onsuccess, onerror) {
+    unregister: function unregister(server, msisdn, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/unregister',
+          url: server + '/unregister',
           body: {
             msisdn: msisdn
           },
@@ -85,11 +85,11 @@
       });
     },
 
-    smsVerify: function smsVerify(msisdn, mcc, credentials, onsuccess, onerror) {
+    smsVerify: function smsVerify(server, msisdn, mcc, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/sms/mt/verify',
+          url: server + '/sms/mt/verify',
           body: {
             msisdn: msisdn,
             mcc: mcc,
@@ -100,11 +100,11 @@
       });
     },
 
-    smsVerifyCode: function smsVerifyCode(verificationCode, credentials, onsuccess, onerror) {
+    smsVerifyCode: function smsVerifyCode(server, verificationCode, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/sms/verify_code',
+          url: server + '/sms/verify_code',
           body: {
             code: verificationCode
           },
@@ -113,11 +113,11 @@
       });
     },
 
-    certificateSign: function certificateSign(publicKey, duration, credentials, onsuccess, onerror) {
+    certificateSign: function certificateSign(server, publicKey, duration, credentials, onsuccess, onerror) {
       deriveHawkCredentials(credentials, 'sessionToken', 2 * 32, function(hawkCredentials) {
         request({
           method: 'POST',
-          url: SERVER_URL + '/certificate/sign',
+          url: server + '/certificate/sign',
           body: {
             publicKey: JSON.stringify(publicKey),
             duration: duration
